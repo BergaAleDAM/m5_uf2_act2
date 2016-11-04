@@ -3,38 +3,55 @@ package m05_uf2_activitat2;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class CostPersonal extends DadesNoValidesException{
-        /**
-         * Declarem la clase treballador per a tal d'accedir als seus metodes.
-         * Per a cada treballador de l'array treballadors[] l'hi atribuim un 
-         * nombre de entre 0 i la longitud màxima de treballadors. 
-         * A continuació, si el treballador es DIRECTOR O SUBDIRECTOR 
-         * costFinal=costFinal + la nomina del treballador. I si, el treballador
-         * no coincideix a cap d'aquests 
-         * costFinal=costFinal + (la nomina + les hores extra * 20).
-         * I retorna aquest costFinal.
-         * @param treballadors
-         * @return 
-         */
-	public float CostDelPersonal(Treballador treballadors[]) throws DadesNoValidesException {
-		float costFinal = 0;
-		Treballador treballador;
-		
-		for (int i = 0; i < treballadors.length; i++) {
-			treballador = treballadors[i];
-			
-                        if(treballador.getNomina()<0 || treballador.getHoresExtres()<0){
-                            throw new DadesNoValidesException();
-                        }
-			if (treballador.getTipusTreballador() == Treballador.DIRECTOR ||
-                                treballador.getTipusTreballador() == Treballador.SUBDIRECTOR) {
-				costFinal = costFinal + treballador.getNomina();
-			} else if(treballador.getTipusTreballador()>1){
-				costFinal = costFinal + treballador.getNomina() + (treballador.getHoresExtres() * 20);
-			}else{
-                            throw new DadesNoValidesException();
-                        }
-		}
-		return costFinal;
-	}
+public class CostPersonal extends TreballadorNoValid {
+
+    /**
+     * A este metodo se le pasa un array de trabajadores que tienen sus datos y 
+     * dependiendo si se trata de director, subdirecto o trabajadador hará una 
+     * función u otra.
+     * El objetivo es saber el coste total de todos los salarios teniendo en cuenta
+     * las horas extra, el salario, y el tipo de trabajador que sea
+     *
+     * @param treballadors
+     * @return
+     */
+    public float CostDelPersonal(Treballador treballadors[]) throws TreballadorNoValid {
+        float costFinal = 0;
+        Treballador treballador;
+
+        for (int i = 0; i < treballadors.length; i++) {
+
+            treballador = treballadors[i];
+            int nomina = treballador.getNomina();
+            int horesExtra = treballador.getHoresExtres();
+            int tipus = treballador.getTipusTreballador();
+            int preuHoraExtra = 20;
+
+            if (treballador.getNomina() < 0 || treballador.getHoresExtres() < 0) {
+                throw new TreballadorNoValid();
+            }
+            if (directorOSubdirector(tipus)) {
+                costFinal = calculCostFinal(costFinal, nomina);
+            } else if (treballador.getTipusTreballador() > 1) {
+                costFinal = calculCostFinal(costFinal, nomina, horesExtra, preuHoraExtra);
+            } else {
+                throw new TreballadorNoValid();
+            }
+        }
+        return costFinal;
+    }
+
+    public float calculCostFinal(float costFinal, int nomina) {
+        return costFinal += nomina;
+    }
+
+    public float calculCostFinal(float costFinal, int nomina, int horesExtra, int preuHoraExtra) {
+        return costFinal += nomina + (horesExtra * preuHoraExtra);
+    }
+
+    public boolean directorOSubdirector(int tipus) {
+        return (tipus == Treballador.DIRECTOR || tipus == Treballador.SUBDIRECTOR);
+    }
+    
+    
 }
